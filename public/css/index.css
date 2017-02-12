@@ -198,3 +198,19 @@ _:-ms-input-placeholder, :root .graph {
       -ms-flex-align: center;
           align-items: center;
 }
+
+.mdl-navigation__link {
+  cursor:pointer;
+}
+
+.ng-cloak {
+  display:none;
+}
+
+.hide.ng-hide {
+  transition: all linear 0.5s;
+}
+
+.hide.ng-hide {
+  opacity: 0;
+}

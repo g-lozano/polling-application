@@ -7,40 +7,50 @@ var app = express()
 
 var dbUrl = process.env.MONGO_URL
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
 
 app.use(express.static('public'))
 
 var temp = false;
 
-app.get('/', function(req, res) {
-    // if (temp)
-        res.sendFile(__dirname + '/public/home.html')
-    // else
-    //     res.sendFile(__dirname + '/public/login.html')
-})
-
 app.get('/login', function(req, res) {
     res.sendFile(__dirname + '/public/login.html')
 })
 
 app.post('/login', function(req, res) {
-    console.log('inside')
-    if (req.body.username == 'test' && req.body.password == 'test') { //temp
-        res.sendStatus(200)
+
+    if (req.body.username && req.body.password) {
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+            else {
+                var doc = db.collection('pa-users')
+                doc.find({
+                    username: req.body.username,
+                    password: 'test'
+                }, {
+                    _id: 0
+                }).toArray(function(err, docs) {
+                    if (err) throw err
+                    else if (docs.length == 1) {
+                        res.status(200).json(docs)
+                    }
+                })
+                db.close();
+            }
+        })
     }
-    else
-        res.sendStatus(500)
+    else  
+        res.status(500)
 })
 
 app.post('/signup', function(req, res) {
-    
+
 })
 
 app.get('/api/polls', function(req, res) {
-    if (req.query.type == "all"){
-        res.send('send all polls')
+    if (req.query.type == "all") {
+        
     }
     else if (req.query.type == 'user') {
         res.send('send user\'s polls')
@@ -51,7 +61,7 @@ app.get('/api/polls', function(req, res) {
 })
 
 // app.get('*', function(req, res) {
-    
+
 // })
 
 app.listen(process.env.PORT)
