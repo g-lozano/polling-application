@@ -7,7 +7,7 @@ var app = express()
 
 var dbUrl = process.env.MONGO_URL
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json())
 
 app.use(express.static('public'))
@@ -27,7 +27,6 @@ app.post('/login', function(req, res) {
                 var doc = db.collection('pa-users')
                 doc.find({
                     username: req.body.username,
-                    password: 'test'
                 }, {
                     _id: 0
                 }).toArray(function(err, docs) {
@@ -45,7 +44,32 @@ app.post('/login', function(req, res) {
 })
 
 app.post('/signup', function(req, res) {
-
+    // 1, 2, 3
+    if (req.body.username && req.body.password) {
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+            else {
+                var doc = db.collection('pa-users')
+                doc.find({
+                    username: req.body.username,
+                }).toArray(function(err, docs) {
+                    if (err) throw err
+                    else if (docs.length == 1) { //username exists
+                        res.send({
+                            success: false
+                        })
+                    }
+                    else //insert
+                        res.send({
+                            success: true
+                        })
+                })
+                db.close();
+            }
+        })
+    }
+    else  
+        res.status(500)
 })
 
 app.get('/api/polls', function(req, res) {

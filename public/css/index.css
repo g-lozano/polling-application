@@ -214,3 +214,7 @@ _:-ms-input-placeholder, :root .graph {
 .hide.ng-hide {
   opacity: 0;
 }
+
+.right {
+  float:right;
+}
