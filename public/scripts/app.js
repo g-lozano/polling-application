@@ -70,8 +70,19 @@
                             })
 
                         success.then(function(data) {
-                            if (data.data.success) { 
-                                $scope.signup_message = 'signup success' //temp, sign user in
+                            if (data.data.success) {
+                                var today = new Date();
+                                var expiresValue = new Date(today);
+                                expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
+
+                                ipCookie('pa_username', data.config.data.username, {
+                                    expires: expiresValue
+                                })
+                                $scope.username = ipCookie('pa_username')
+                                
+                                document.getElementById('signup_form').reset()
+                                $scope.view = 'home'
+                                $scope.signup_message = ""
                             }
                             else
                                 $scope.signup_message = "User exists."
@@ -100,26 +111,22 @@
                         $scope.login_message = ''
                         var userinfo = $http.post('/login', params)
                             .then(function successCallback(response) {
-                                if (response.status == 200) {
-                                    return response
-                                }
+                                // return response
+                                $scope.view = "home"
+
+                                var today = new Date();
+                                var expiresValue = new Date(today);
+                                expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
+
+                                ipCookie('pa_username', response.data[0].username, {
+                                    expires: expiresValue
+                                })
+
+                                $scope.username = ipCookie('pa_username')
+                                document.getElementById('login_form').reset()
                             }, function errorCallback(response) {
-                                console.log('no response from login script')
+                                $scope.login_message = 'Invalid login information.'
                             })
-                        userinfo.then(function(data) {
-                            $scope.view = "home"
-
-                            var today = new Date();
-                            var expiresValue = new Date(today);
-                            expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
-
-                            ipCookie('pa_username', data.data[0].username, {
-                                expires: expiresValue
-                            })
-
-                            $scope.username = ipCookie('pa_username')
-                            document.getElementById('login_form').reset()
-                        })
                     }
                     else
                         $scope.login_message = 'no username and/or password'
