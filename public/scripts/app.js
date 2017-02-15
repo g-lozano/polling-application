@@ -49,25 +49,77 @@
                 $scope.type = 'my'
 
                 $scope.showMyPolls = function() {
-                    if ($scope.type == 'all')
-                        $scope.type = 'my'
+                    $scope.type = 'my'
                 }
 
                 $scope.showAllPolls = function() {
-                    if ($scope.type == 'my')
-                        $scope.type = 'all'
+                    $scope.type = 'all'
                 }
 
                 $scope.createPoll = function() {
+                    $scope.type = 'create_poll'
+                }
+                
+                $scope.insertPoll = function() {
                     
+                }
+                
+                var count = 2
+                $scope.addOption = function() {
+                    var current = count++
+                    var options = document.getElementById('options')
+
+                    //div
+                    var node = document.createElement("DIV")
+                    var div_class = document.createAttribute("class")
+                    div_class.value = "mdl-textfield mdl-js-textfield is-upgraded"
+                    node.setAttributeNode(div_class)
+                    
+                    var div_upgrade = document.createAttribute("data-upgraded")
+                    div_upgrade.value = ",MaterialTextfield"
+                    node.setAttributeNode(div_upgrade)
+                    
+                    //text
+                    node.appendChild(document.createTextNode((current + 1) + "."))
+
+                    //input
+                    var input = document.createElement("INPUT")
+                    
+                    var input_class = document.createAttribute("class")
+                    input_class.value = "mdl-textfield__input"
+                    input.setAttributeNode(input_class)
+                    
+                    var input_name = document.createAttribute("name")
+                    input_name.value = "option" + current 
+                    input.setAttributeNode(input_name)
+                    
+                    var input_type = document.createAttribute("type")
+                    input_type.value = "text"
+                    input.setAttributeNode(input_type)
+                    
+                    var input_id = document.createAttribute("id")
+                    input_id.value = "option" + current
+                    input.setAttributeNode(input_id)
+                    
+                    //br
+                    var br = document.createElement("BR")
+
+                    node.appendChild(input)
+                    
+                    options.appendChild(node)
+                    options.appendChild(br)
+                }
+
+                $scope.cancelCreatePoll = function() {
+                    $scope.type = 'my'
                 }
 
                 $scope.deletePoll = function() {
 
                 }
-                
+
                 $scope.submit = function() {
-                    
+
                 }
 
                 $scope.logout = function() {

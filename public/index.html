@@ -50,14 +50,45 @@
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid content">
           <div class="graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-            <div ng-if="type=='all'">
+            <div ng-show="type=='all'" class="ng-hide">
               All Polls Area {{view}}
             </div>
             <!--User polls-->
-            <div ng-if="type=='my'">
+            <div ng-show="type=='my'" class="ng-hide">
               (List of user polls.)
               <br>
               <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button">Add Poll</button>
+            </div>
+            <div ng-show="type=='create_poll'" class="ng-hide">
+
+              <form>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" name="title" type="text" id="title" />
+                  <label class="mdl-textfield__label" for="title">Title</label>
+                </div>
+                <br> Options
+                <div id="options">
+                  <div class="mdl-textfield mdl-js-textfield">
+                    1. <input class="mdl-textfield__input" name="option0" type="text" id="option0" />
+                    <!--<label class="mdl-textfield__label" for="option0">Option 1</label>-->
+                  </div>
+                  <br>
+                  <div class="mdl-textfield mdl-js-textfield">
+                    2. <input class="mdl-textfield__input" name="option1" type="text" id="option1" />
+                    <!--<label class="mdl-textfield__label" for="option1">Option 2</label>-->
+                  </div>
+                  <br>
+                </div>
+              </form>
+              <button ng-click="addOption()" class="mdl-button mdl-js-button mdl-button--fab">
+                <i class="material-icons">add</i>
+              </button><br><br>
+              <button class="mdl-button mdl-js-button mdl-button--raised">
+                Create Poll
+              </button>
+              <button ng-click="cancelCreatePoll()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -83,7 +114,7 @@
                   <form id="login_form">
                     {{login_message}}
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input  class="mdl-textfield__input" name="username" type="text" id="username" />
+                      <input class="mdl-textfield__input" name="username" type="text" id="username" />
                       <label class="mdl-textfield__label" for="username">Username</label>
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
@@ -107,9 +138,9 @@
     </main>
 
   </div>
-  
-  
-   <div class="layout mdl-layout mdl-js-layout mdl-layout--fixed-header" ng-show="view=='signup'" class="ng-hide">
+
+
+  <div class="layout mdl-layout mdl-js-layout mdl-layout--fixed-header" ng-show="view=='signup'" class="ng-hide">
 
     <main class="mdl-layout__content mdl-color--grey-100">
       <div class="mdl-grid content">
@@ -124,7 +155,7 @@
                   <form id="signup_form">
                     {{signup_message}}
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input  class="mdl-textfield__input" name="new_username" type="text" id="new_username" />
+                      <input class="mdl-textfield__input" name="new_username" type="text" id="new_username" />
                       <label class="mdl-textfield__label" for="username">New Username</label>
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
@@ -151,7 +182,7 @@
     </main>
 
   </div>
-  
+
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-resource.min.js"></script>
