@@ -5,16 +5,44 @@
         .module('app', ['ngResource', 'ipCookie'])
         .controller('homeCtrl', ['$scope', '$http', 'ipCookie',
             function($scope, $http, ipCookie) {
+
+                var checkUser = function() {
+                    var username = ''
+                    try {
+                        username = ipCookie('pa_username')
+                    }
+                    catch (e) {}
+
+                    if (username) {
+                        var info = {
+                            username: username
+                        }
+
+                        $http.post('/check_user', info)
+                            .then(function successCallback(response) {
+                                $scope.view = 'home'
+                            }, function errorCallback(response) {
+                                ipCookie('pa_username', null)
+                                $scope.view = 'login'
+                            })
+                    }
+                    else
+                        $scope.view = 'login'
+                }
+
                 $scope.test = ''
                 $scope.username = ''
+                $scope.isUser = false
+                $scope.options = []
 
                 try {
                     $scope.username = ipCookie('pa_username')
                 }
                 catch (e) {}
 
-                if ($scope.username)
-                    $scope.view = 'home'
+                if ($scope.username) {
+                    checkUser()
+                }
                 else
                     $scope.view = 'login'
 
@@ -31,16 +59,23 @@
                 }
 
                 $scope.createPoll = function() {
-
+                    
                 }
 
                 $scope.deletePoll = function() {
 
                 }
+                
+                $scope.submit = function() {
+                    
+                }
 
                 $scope.logout = function() {
-                    ipCookie('pa_username', null)
-                    $scope.view = 'login'
+                    $http.post('/logout')
+                        .then(function successCallback(response) {
+                            ipCookie('pa_username', null)
+                            $scope.view = 'login'
+                        })
                 }
 
                 $scope.viewSignUp = function() {
@@ -59,17 +94,16 @@
                             username: new_username,
                             password: new_password1
                         }
-                        var success = $http.post('/signup', params)
+                        $http.post('/signup', params)
                             .then(function successCallback(response) {
                                 if (response.status == 200) {
                                     return response
-                                    alert(JSON.stringify(response))
                                 }
                             }, function errorCallback(response) {
                                 console.log('no response from signup script')
                             })
 
-                        success.then(function(data) {
+                        .then(function(data) {
                             if (data.data.success) {
                                 var today = new Date();
                                 var expiresValue = new Date(today);
@@ -79,7 +113,7 @@
                                     expires: expiresValue
                                 })
                                 $scope.username = ipCookie('pa_username')
-                                
+
                                 document.getElementById('signup_form').reset()
                                 $scope.view = 'home'
                                 $scope.signup_message = ""
@@ -111,7 +145,6 @@
                         $scope.login_message = ''
                         var userinfo = $http.post('/login', params)
                             .then(function successCallback(response) {
-                                // return response
                                 $scope.view = "home"
 
                                 var today = new Date();
@@ -129,7 +162,7 @@
                             })
                     }
                     else
-                        $scope.login_message = 'no username and/or password'
+                        $scope.login_message = 'No username and/or password.'
                 }
             }
         ])
