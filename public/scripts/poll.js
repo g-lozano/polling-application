@@ -11,9 +11,11 @@
                 var params = str.split('?')[1]
                 if (params) {
                     var id = params.split('=')[1]
-                    if (id) {
-                        var url = '/api/polls?=poll_id=' + id
-                        $http.get(url)
+                    if (id && params.split('=')[0] == 'poll_id') {
+                        var info = {
+                            poll_id: id
+                        }
+                        $http.post('/api/polls', info)
                             .then(function successCallback(response) {
                                 console.log('success')
                             })

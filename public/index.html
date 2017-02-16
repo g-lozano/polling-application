@@ -70,20 +70,19 @@
                 <div id="options">
                   <div class="mdl-textfield mdl-js-textfield">
                     1. <input class="mdl-textfield__input" name="option0" type="text" id="option0" />
-                    <!--<label class="mdl-textfield__label" for="option0">Option 1</label>-->
                   </div>
                   <br>
                   <div class="mdl-textfield mdl-js-textfield">
                     2. <input class="mdl-textfield__input" name="option1" type="text" id="option1" />
-                    <!--<label class="mdl-textfield__label" for="option1">Option 2</label>-->
                   </div>
                   <br>
                 </div>
               </form>
+              <div>{{options_message}}</div>
               <button ng-click="addOption()" class="mdl-button mdl-js-button mdl-button--fab">
                 <i class="material-icons">add</i>
               </button><br><br>
-              <button class="mdl-button mdl-js-button mdl-button--raised">
+              <button ng-click="insertPoll()" class="mdl-button mdl-js-button mdl-button--raised">
                 Create Poll
               </button>
               <button ng-click="cancelCreatePoll()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">

@@ -59,53 +59,89 @@
                 $scope.createPoll = function() {
                     $scope.type = 'create_poll'
                 }
-                
+
                 $scope.insertPoll = function() {
-                    
+                    $scope.options_message = ''
+                    var title = document.getElementById('title').value
+                    var optionsNode = document.getElementById('options')
+                    var options = []
+
+                    var input1 = optionsNode.childNodes[1].childNodes[1].value
+                    var input2 = optionsNode.childNodes[5].childNodes[1].value
+
+                    if (!title) {
+                        $scope.options_message = 'Please add a title.'
+                    }
+                    else if (input1 && input2) {
+                        options.push(input1)
+                        options.push(input2)
+                        if (optionsNode.childNodes.length > 9) {
+                            for (var i = 9; i < optionsNode.childNodes.length; i = i + 2) {
+                                if (optionsNode.childNodes[i].childNodes[1].value)
+                                    options.push(optionsNode.childNodes[i].childNodes[1].value)
+                            }
+                        }
+                        
+                        var params = {
+                            type: 'insert',
+                            username: ipCookie('pa-username'),
+                            title: title,
+                            options: options
+                        }
+                        
+                        $http.post('/api/polls', params)
+                            .then(function successCallback(response) {
+                                if (response.status == 200) {
+                                    alert(JSON.stringify(response))
+                                }
+                            })
+                    }
+                    else
+                        $scope.options_message = 'Please fill in at least 2 options.'
                 }
-                
+
                 var count = 2
                 $scope.addOption = function() {
                     var current = count++
-                    var options = document.getElementById('options')
+                        var options = document.getElementById('options')
 
                     //div
                     var node = document.createElement("DIV")
                     var div_class = document.createAttribute("class")
                     div_class.value = "mdl-textfield mdl-js-textfield is-upgraded"
                     node.setAttributeNode(div_class)
-                    
+
                     var div_upgrade = document.createAttribute("data-upgraded")
                     div_upgrade.value = ",MaterialTextfield"
                     node.setAttributeNode(div_upgrade)
-                    
+
                     //text
                     node.appendChild(document.createTextNode((current + 1) + "."))
 
                     //input
                     var input = document.createElement("INPUT")
-                    
+
                     var input_class = document.createAttribute("class")
                     input_class.value = "mdl-textfield__input"
                     input.setAttributeNode(input_class)
-                    
+
                     var input_name = document.createAttribute("name")
-                    input_name.value = "option" + current 
+                    input_name.value = "option" + current
                     input.setAttributeNode(input_name)
-                    
+
                     var input_type = document.createAttribute("type")
                     input_type.value = "text"
                     input.setAttributeNode(input_type)
-                    
+
                     var input_id = document.createAttribute("id")
                     input_id.value = "option" + current
                     input.setAttributeNode(input_id)
-                    
+
                     //br
                     var br = document.createElement("BR")
 
                     node.appendChild(input)
-                    
+
                     options.appendChild(node)
                     options.appendChild(br)
                 }

@@ -24,7 +24,6 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 app.get('/poll', function(req, res) {
-    console.log('test')
     res.sendFile(__dirname + '/public/poll.html')
 })
 
@@ -117,14 +116,17 @@ app.post('/check_user', function(req, res) {
         res.status(500).json({msg:'user not authorized'})
 })
 
-app.get('/api/polls', function(req, res) {
-    if (req.query.type == "all") {
+app.post('/api/polls', function(req, res) {
+    if (req.body.type == "all") {
 
     }
-    else if (req.query.type == 'user') {
+    else if (req.body.type == 'user') {
         res.send('send user\'s polls')
     }
-    else if (req.query.poll_id) {
+    else if (req.body.type == 'insert') {
+        res.status(200).json({msg:'hi'})
+    }
+    else if (req.body.poll_id) {
         res.status(200).json({msg:'hi'})
     }
     else {
