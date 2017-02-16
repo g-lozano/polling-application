@@ -218,3 +218,11 @@ _:-ms-input-placeholder, :root .graph {
 .right {
   float:right;
 }
+
+.clickable {
+  cursor:pointer;
+}
+
+.material-icons {
+  font-size:18px;
+}

@@ -34,7 +34,7 @@ function generateID(callback) {
     str = str.join('')
     mongo.connect(dbUrl, function(err, db) {
         if (err) throw err
-        
+
         var doc = db.collection('pa-polls')
         doc.find({
             id: str
@@ -45,7 +45,7 @@ function generateID(callback) {
             else
                 callback(str)
         })
-        
+
         db.close()
     })
 }
@@ -90,16 +90,22 @@ app.post('/login', function(req, res) {
                     _id: 0
                 }).toArray(function(err, docs) {
                     if (err) throw err
-                    
+
                     if (docs.length == 1) {
-                        bcrypt.compare(req.body.password, docs[0].hash).then(function() {
-                            req.session.username = req.body.username
-                            res.status(200).json(docs)
+                        bcrypt.compare(req.body.password, docs[0].hash).then(function(isUser) {
+                            if (isUser) {
+                                req.session.username = req.body.username
+                                res.status(200).json(docs)
+                            }
+                            else
+                                res.status(500).json({
+                                    error: 'Invalid username or password.' //password is wrong
+                                })
                         })
                     }
                     else {
                         res.status(500).json({
-                            error: 'not found'
+                            error: 'Invalid username or password.' //user does not exist
                         })
                     }
                 })
@@ -131,7 +137,7 @@ app.post('/signup', function(req, res) {
                     _id: 0
                 }).toArray(function(err, docs) {
                     if (err) throw err
-                    
+
                     if (docs.length == 1) {
                         res.send({
                             success: false
@@ -178,33 +184,47 @@ app.post('/check_user', function(req, res) {
 
 app.post('/api/polls', function(req, res) {
     if (req.body.type == "all") {
-
-    }
-    else if (req.body.type == 'user') {
-        
         mongo.connect(dbUrl, function(err, db) {
             if (err) throw err
-            else {
-                var doc = db.collection('pa-polls')
-                doc.find({
-                    username: req.body.username
-                }, {
-                    _id: 0
-                }).toArray(function(err, docs) {
+
+            var doc = db.collection('pa-polls')
+            doc.find({})
+                .toArray(function(err, docs) {
                     if (err) throw err
-                    
+
                     if (docs.length > 0) {
-                       res.status(200).json(docs)
+                        res.status(200).json(docs)
                     }
                     else {
-
+                        res.status(500).json([])
                     }
                 })
-            }
+
             db.close()
         })
-        
-        
+    }
+    else if (req.body.type == 'user') {
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+
+            var doc = db.collection('pa-polls')
+            doc.find({
+                username: req.body.username
+            }, {
+                _id: 0
+            }).toArray(function(err, docs) {
+                if (err) throw err
+
+                if (docs.length > 0) {
+                    res.status(200).json(docs)
+                }
+                else {
+                    res.status(500).json([])
+                }
+            })
+
+            db.close()
+        })
     }
     else if (req.body.type == 'insert') {
         generateID(function(id) {
@@ -220,9 +240,44 @@ app.post('/api/polls', function(req, res) {
             })
         })
     }
+    else if (req.body.type == 'remove') {
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+
+            var doc = db.collection('pa-polls')
+            doc.remove({
+                id: req.body.id
+            })
+
+            res.status(200).json({
+                msg: 'removed'
+            })
+
+            db.close()
+        })
+    }
     else if (req.body.poll_id) {
-        res.status(200).json({
-            msg: 'hi'
+
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+
+            var doc = db.collection('pa-polls')
+            doc.find({
+                id: req.body.poll_id
+            }, {
+                _id: 0
+            }).toArray(function(err, docs) {
+                if (err) throw err
+
+                if (docs.length > 0) {
+                    res.status(200).json(docs[0])
+                }
+                else {
+                    res.status(500).json([])
+                }
+            })
+
+            db.close()
         })
     }
     else {

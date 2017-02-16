@@ -36,14 +36,18 @@
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <!-- Title -->
-          <span class="mdl-layout-title">Welcome, {{username}}</span>
+          <span ng-show="loggedIn" class="ng-hide mdl-layout-title">Welcome, {{username}}</span>
           <!-- Add spacer, to align navigation to the right -->
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation. We hide it in small screens. -->
-          <nav class="mdl-navigation">
+          <nav class="mdl-navigation ng-hide" ng-show="loggedIn">
             <a ng-click="showMyPolls()" class="mdl-navigation__link">My Polls</a>
             <a ng-click="showAllPolls()" class="mdl-navigation__link">All Polls</a>
             <a ng-click="logout()" class="mdl-navigation__link">Logout <i></i></a>
+          </nav>
+          <nav class="mdl-navigation ng-hide" ng-show="!loggedIn">
+            <a ng-click="showLoginForm()" class="mdl-navigation__link">Log In<i></i></a>
+            <a ng-click="showSignUp()" class="mdl-navigation__link">Sign Up<i></i></a>
           </nav>
         </div>
       </header>
@@ -51,20 +55,35 @@
         <div class="mdl-grid content">
           <div class="graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
             <div ng-show="type=='all'" class="ng-hide">
-              All Polls Area {{view}}
+              <!--All polls-->
+              
+              <table class="mdl-data-table mdl-shadow--2dp">
+                  <tbody ng-repeat="poll in allPolls">
+                    <tr id="items">
+                      <td ng-click="openPoll($index)" id="item_{{$index}}" class="mdl-data-table__cell--non-numeric clickable">
+                        {{poll.title}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              
             </div>
             <!--User polls-->
-            My Polls
-            <br>
-            <br>
+
             <div ng-show="type=='my'" class="ng-hide">
+              <h4 ng-show="userPolls.length == 0 && !noPolls" class="ng-hide">loading polls...</h4>
+              <h4 ng-show="userPolls.length == 0 && noPolls" class="ng-hide">You have no polls.</h4>
+              <h4 ng-show="userPolls.length > 0" class="ng-hide">My Polls</h4>
               <div id="user_polls">
 
                 <table class="mdl-data-table mdl-shadow--2dp">
                   <tbody ng-repeat="poll in userPolls">
-                    <tr>
-                      <td ng-click="openPoll($index)" class="mdl-data-table__cell--non-numeric">
+                    <tr id="items">
+                      <td ng-click="openMyPoll($index)" id="item_{{$index}}" class="mdl-data-table__cell--non-numeric clickable">
                         {{poll.title}}
+                      </td>
+                      <td ng-click="removePoll($index)" class="mdl-data-table__cell--non-numeric clickable">
+                        <i class="material-icons">delete_forever</i>
                       </td>
                     </tr>
                   </tbody>
@@ -73,7 +92,7 @@
               </div>
 
               <br>
-              <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button">Add Poll</button>
+              <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button" ng-show="userPolls.length > 0 || noPolls" class="ng-hide">Add Poll</button>
             </div>
 
             <div ng-show="type=='create_poll'" class="ng-hide">
@@ -136,7 +155,7 @@
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                       <button ng-click="submitLogin()" class="mdl-button mdl-button--colored mdl-js-button">Log in</button>
-                      <button ng-click="viewSignUp()" class="right mdl-button mdl-button--colored mdl-js-button">Sign Up</button>
+                      <button ng-click="showSignUp()" class="right mdl-button mdl-button--colored mdl-js-button">Sign Up</button>
                     </div>
                   </form>
                 </div>
@@ -178,6 +197,7 @@
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                       <button ng-click="submitSignUp()" class="mdl-button mdl-button--colored mdl-js-button">Sign Up</button>
+                      <button ng-click="returnHome()" class="mdl-button mdl-button--colored mdl-js-button right">Home</button>
                     </div>
                   </form>
                 </div>

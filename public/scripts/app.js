@@ -20,6 +20,9 @@
 
                         $http.post('/check_user', info)
                             .then(function successCallback(response) {
+                                $scope.loggedIn = true
+                                loadAllPolls()
+                                loadUserPolls()
                                 $scope.view = 'home'
                             }, function errorCallback(response) {
                                 ipCookie('pa_username', null)
@@ -32,9 +35,13 @@
 
                 $scope.test = ''
                 $scope.username = ''
+                $scope.loggedIn = false
                 $scope.isUser = false
+                $scope.noUserPolls = false
+                $scope.noPolls = false
                 $scope.options = []
                 $scope.userPolls = []
+                $scope.allPolls = []
 
                 try {
                     $scope.username = ipCookie('pa_username')
@@ -47,9 +54,10 @@
                 else
                     $scope.view = 'login'
 
-                $scope.type = 'my'
+                $scope.view = 'home'
+                $scope.type = 'all'
 
-                var loadPolls = function() {
+                var loadUserPolls = function() {
                     var params = {
                         type: 'user',
                         username: ipCookie('pa_username')
@@ -57,7 +65,27 @@
                     $http.post('/api/polls', params)
                         .then(function successCallback(response) {
                             $scope.userPolls = response.data
+
+                        }, function errorCallback(response) {
+                            $scope.noUserPolls = true
                         })
+                }
+
+                var loadAllPolls = function() {
+                    var params = {
+                        type: 'all'
+                    }
+                    $http.post('/api/polls', params)
+                        .then(function successCallback(response) {
+                            $scope.noPolls = false
+                            $scope.allPolls = response.data
+                        }, function errorCallback(response) {
+                            $scope.noPolls = true
+                        })
+                }
+                
+                $scope.showLoginForm = function() {
+                    $scope.view = 'login'
                 }
 
                 $scope.showMyPolls = function() {
@@ -85,12 +113,24 @@
                         $scope.options_message = 'Please add a title.'
                     }
                     else if (input1 && input2) {
-                        options.push(input1)
-                        options.push(input2)
+                        option_count = 2
+                        options.push({
+                            content: input1,
+                            votes: 0
+                        })
+                        options.push({
+                            content: input2,
+                            votes: 0
+                        })
                         if (optionsNode.childNodes.length > 9) {
                             for (var i = 9; i < optionsNode.childNodes.length; i = i + 2) {
-                                if (optionsNode.childNodes[i].childNodes[1].value)
-                                    options.push(optionsNode.childNodes[i].childNodes[1].value)
+                                if (optionsNode.childNodes[i].childNodes[1].value) {
+                                    var temp = {
+                                        content: optionsNode.childNodes[i].childNodes[1].value,
+                                        votes: 0
+                                    }
+                                    options.push(temp)
+                                }
                             }
                         }
 
@@ -103,7 +143,8 @@
 
                         $http.post('/api/polls', params)
                             .then(function successCallback(response) {
-                                //redirect to poll
+                                loadUserPolls()
+                                loadAllPolls()
                                 $scope.type = 'my'
                                 while (optionsNode.childNodes.length > 9)
                                     optionsNode.removeChild(optionsNode.childNodes[9])
@@ -114,9 +155,9 @@
                         $scope.options_message = 'Please fill in at least 2 options.'
                 }
 
-                var count = 2
+                var option_count = 2
                 $scope.addOption = function() {
-                    var current = count++
+                    var current = option_count++
                         var options = document.getElementById('options')
 
                     //div
@@ -163,24 +204,40 @@
                 $scope.cancelCreatePoll = function() {
                     $scope.type = 'my'
                 }
-
-                $scope.deletePoll = function() {
-
+                
+                $scope.returnHome = function() {
+                    $scope.view = 'home'
                 }
 
-                $scope.submit = function() {
+                $scope.removePoll = function(index) {
+                    var params = {
+                        type: 'remove',
+                        id: $scope.userPolls[index].id
+                    }
 
+                    $scope.userPolls.splice(index, 1)
+                    if ($scope.userPolls.length == 0)
+                        $scope.noUserPolls = true
+                    else
+                        $scope.noUserPolls = false
+
+                    $http.post('/api/polls', params)
+                        .then(function successCallback(response) {
+                            console.log('removed')
+                        })
                 }
 
                 $scope.logout = function() {
                     $http.post('/logout')
                         .then(function successCallback(response) {
+                            $scope.loggedIn = false
                             ipCookie('pa_username', null)
-                            $scope.view = 'login'
+                            $scope.userPolls = []
+                            $scope.view = 'home'
                         })
                 }
 
-                $scope.viewSignUp = function() {
+                $scope.showSignUp = function() {
                     $scope.view = 'signup'
                 }
 
@@ -198,18 +255,11 @@
                         }
                         $http.post('/signup', params)
                             .then(function successCallback(response) {
-                                return response
-                            }, function errorCallback(response) {
-                                console.log('no response from signup script')
-                            })
-
-                        .then(function(data) {
-                            if (data.data.success) {
                                 var today = new Date();
                                 var expiresValue = new Date(today);
                                 expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
 
-                                ipCookie('pa_username', data.config.data.username, {
+                                ipCookie('pa_username', response.config.data.username, {
                                     expires: expiresValue
                                 })
                                 $scope.username = ipCookie('pa_username')
@@ -217,10 +267,10 @@
                                 document.getElementById('signup_form').reset()
                                 $scope.view = 'home'
                                 $scope.signup_message = ""
-                            }
-                            else
+                            }, function errorCallback(response) {
                                 $scope.signup_message = "User exists."
-                        })
+                            })
+
                     }
                     else if (!new_username) {
                         $scope.signup_message = 'No username entered.'
@@ -245,6 +295,7 @@
                         $scope.login_message = ''
                         var userinfo = $http.post('/login', params)
                             .then(function successCallback(response) {
+                                $scope.loggedIn = true
                                 $scope.view = "home"
                                 var today = new Date();
                                 var expiresValue = new Date(today);
@@ -256,7 +307,8 @@
 
                                 $scope.username = ipCookie('pa_username')
                                 document.getElementById('login_form').reset()
-                                loadPolls()
+                                loadUserPolls()
+                                loadAllPolls()
                             }, function errorCallback(response) {
                                 $scope.login_message = 'Invalid login information.'
                             })
@@ -265,9 +317,19 @@
                         $scope.login_message = 'No username and/or password.'
                 }
 
-                $scope.openPoll = function(index) {
-                    window.open(window.location.href + 'poll?id=' + $scope.userPolls[index].id)
+                $scope.openMyPoll = function(index) {
+                    window.open(window.location.href + 'poll?poll_id=' + $scope.userPolls[index].id)
                 }
+
+                $scope.openPoll = function(index) {
+                    window.open(window.location.href + 'poll?poll_id=' + $scope.allPolls[index].id)
+                }
+
+                var init = function() {
+                    loadAllPolls()
+                };
+
+                init();
             }
         ])
 })();
