@@ -34,6 +34,7 @@
                 $scope.username = ''
                 $scope.isUser = false
                 $scope.options = []
+                $scope.userPolls = []
 
                 try {
                     $scope.username = ipCookie('pa_username')
@@ -48,16 +49,19 @@
 
                 $scope.type = 'my'
 
-                $scope.showMyPolls = function() {
-                    $scope.type = 'my'
+                var loadPolls = function() {
                     var params = {
                         type: 'user',
                         username: ipCookie('pa_username')
                     }
                     $http.post('/api/polls', params)
                         .then(function successCallback(response) {
-                            console.log(JSON.stringify(response))
+                            $scope.userPolls = response.data
                         })
+                }
+
+                $scope.showMyPolls = function() {
+                    $scope.type = 'my'
                 }
 
                 $scope.showAllPolls = function() {
@@ -104,8 +108,6 @@
                                 while (optionsNode.childNodes.length > 9)
                                     optionsNode.removeChild(optionsNode.childNodes[9])
                                 document.getElementById('options_form').reset()
-                                document.getElementById('title').value = null
-                                alert(JSON.stringify(response.data.id))
                             })
                     }
                     else
@@ -244,7 +246,6 @@
                         var userinfo = $http.post('/login', params)
                             .then(function successCallback(response) {
                                 $scope.view = "home"
-
                                 var today = new Date();
                                 var expiresValue = new Date(today);
                                 expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
@@ -255,12 +256,17 @@
 
                                 $scope.username = ipCookie('pa_username')
                                 document.getElementById('login_form').reset()
+                                loadPolls()
                             }, function errorCallback(response) {
                                 $scope.login_message = 'Invalid login information.'
                             })
                     }
                     else
                         $scope.login_message = 'No username and/or password.'
+                }
+
+                $scope.openPoll = function(index) {
+                    window.open(window.location.href + 'poll?id=' + $scope.userPolls[index].id)
                 }
             }
         ])

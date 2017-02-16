@@ -54,11 +54,28 @@
               All Polls Area {{view}}
             </div>
             <!--User polls-->
+            My Polls
+            <br>
+            <br>
             <div ng-show="type=='my'" class="ng-hide">
-              (List of user polls.)
+              <div id="user_polls">
+
+                <table class="mdl-data-table mdl-shadow--2dp">
+                  <tbody ng-repeat="poll in userPolls">
+                    <tr>
+                      <td ng-click="openPoll($index)" class="mdl-data-table__cell--non-numeric">
+                        {{poll.title}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
               <br>
               <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button">Add Poll</button>
             </div>
+
             <div ng-show="type=='create_poll'" class="ng-hide">
 
               <form id="options_form">
