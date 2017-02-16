@@ -50,6 +50,14 @@
 
                 $scope.showMyPolls = function() {
                     $scope.type = 'my'
+                    var params = {
+                        type: 'user',
+                        username: ipCookie('pa_username')
+                    }
+                    $http.post('/api/polls', params)
+                        .then(function successCallback(response) {
+                            console.log(JSON.stringify(response))
+                        })
                 }
 
                 $scope.showAllPolls = function() {
@@ -81,19 +89,23 @@
                                     options.push(optionsNode.childNodes[i].childNodes[1].value)
                             }
                         }
-                        
+
                         var params = {
                             type: 'insert',
-                            username: ipCookie('pa-username'),
+                            username: ipCookie('pa_username'),
                             title: title,
                             options: options
                         }
-                        
+
                         $http.post('/api/polls', params)
                             .then(function successCallback(response) {
-                                if (response.status == 200) {
-                                    alert(JSON.stringify(response))
-                                }
+                                //redirect to poll
+                                $scope.type = 'my'
+                                while (optionsNode.childNodes.length > 9)
+                                    optionsNode.removeChild(optionsNode.childNodes[9])
+                                document.getElementById('options_form').reset()
+                                document.getElementById('title').value = null
+                                alert(JSON.stringify(response.data.id))
                             })
                     }
                     else
@@ -184,9 +196,7 @@
                         }
                         $http.post('/signup', params)
                             .then(function successCallback(response) {
-                                if (response.status == 200) {
-                                    return response
-                                }
+                                return response
                             }, function errorCallback(response) {
                                 console.log('no response from signup script')
                             })

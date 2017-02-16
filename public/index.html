@@ -61,10 +61,9 @@
             </div>
             <div ng-show="type=='create_poll'" class="ng-hide">
 
-              <form>
+              <form id="options_form">
                 <div class="mdl-textfield mdl-js-textfield">
-                  <input class="mdl-textfield__input" name="title" type="text" id="title" />
-                  <label class="mdl-textfield__label" for="title">Title</label>
+                  <input class="mdl-textfield__input" name="title" type="text" id="title" placeholder="Title" />
                 </div>
                 <br> Options
                 <div id="options">
@@ -113,12 +112,10 @@
                   <form id="login_form">
                     {{login_message}}
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="username" type="text" id="username" />
-                      <label class="mdl-textfield__label" for="username">Username</label>
+                      <input class="mdl-textfield__input" name="username" type="text" id="username" placeholder="Username" />
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="password" type="password" id="password" />
-                      <label class="mdl-textfield__label" for="password">Password</label>
+                      <input class="mdl-textfield__input" name="password" type="password" id="password" placeholder="Password" />
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                       <button ng-click="submitLogin()" class="mdl-button mdl-button--colored mdl-js-button">Log in</button>
@@ -154,16 +151,13 @@
                   <form id="signup_form">
                     {{signup_message}}
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="new_username" type="text" id="new_username" />
-                      <label class="mdl-textfield__label" for="username">New Username</label>
+                      <input class="mdl-textfield__input" name="new_username" type="text" id="new_username" placeholder="New Username" />
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="new_password1" type="password" id="new_password1" />
-                      <label class="mdl-textfield__label" for="new_password1">Password</label>
+                      <input class="mdl-textfield__input" name="new_password1" type="password" id="new_password1" placeholder="New Password" />
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="new_password2" type="password" id="new_password2" />
-                      <label class="mdl-textfield__label" for="new_password2">Re-type Password</label>
+                      <input class="mdl-textfield__input" name="new_password2" type="password" id="new_password2" placeholder="Re-type New Password" />
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                       <button ng-click="submitSignUp()" class="mdl-button mdl-button--colored mdl-js-button">Sign Up</button>
