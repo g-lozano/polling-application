@@ -144,7 +144,7 @@ app.post('/signup', function(req, res) {
                         })
                     }
                     else {
-
+                        
                         bcrypt.hash(req.body.password, saltRounds).then(function(hash) {
                             var userinfo = {
                                 username: req.body.username,
@@ -153,6 +153,7 @@ app.post('/signup', function(req, res) {
 
                             doc.insert(userinfo, function(err, data) {
                                 if (err) throw err
+                                req.session.username = req.body.username
                                 res.send({
                                     success: true
                                 })
@@ -256,12 +257,11 @@ app.post('/api/polls', function(req, res) {
             db.close()
         })
     }
-    else if (req.body.type == 'increment') {
+    else if (req.body.type == 'update') {
         mongo.connect(dbUrl, function(err, db) {
             if (err) throw err
 
             var doc = db.collection('pa-polls')
-
             doc.update({
                     id: req.body.id
                 }, req.body.pollData, {
@@ -274,29 +274,38 @@ app.post('/api/polls', function(req, res) {
             db.close()
         })
     }
-    else if (req.body.poll_id) {
-
-        mongo.connect(dbUrl, function(err, db) {
-            if (err) throw err
-
-            var doc = db.collection('pa-polls')
-            doc.find({
-                id: req.body.poll_id
-            }, {
-                _id: 0
-            }).toArray(function(err, docs) {
+    else if (req.body.type == 'poll') {
+        if (req.body.poll_id) {
+            mongo.connect(dbUrl, function(err, db) {
                 if (err) throw err
 
-                if (docs.length > 0) {
-                    res.status(200).json(docs[0])
-                }
-                else {
-                    res.status(500).json([])
-                }
-            })
+                var doc = db.collection('pa-polls')
+                doc.find({
+                    id: req.body.poll_id
+                }, {
+                    _id: 0
+                }).toArray(function(err, docs) {
+                    if (err) throw err
 
-            db.close()
-        })
+                    if (docs.length > 0) {
+                        res.status(200).json(docs[0])
+                    }
+                    else {
+                        res.status(500).json({
+                            error: 'Poll does not exist.'
+                        })
+                    }
+                })
+
+                db.close()
+            })
+        }
+        else {
+            console.log('h')
+            res.status(500).json({
+                error: 'No ID.'
+            })
+        }
     }
     else {
         res.send('no parameters')

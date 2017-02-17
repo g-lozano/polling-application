@@ -42,7 +42,7 @@
           <!-- Navigation. We hide it in small screens. -->
           <nav class="mdl-navigation ng-hide" ng-show="loggedIn">
             <a ng-click="showMyPolls()" class="mdl-navigation__link">My Polls</a>
-            <a ng-click="showAllPolls()" class="mdl-navigation__link">All Polls</a>
+            <a ng-click="showAllPolls()" class="mdl-navigation__link">Public Polls</a>
             <a ng-click="logout()" class="mdl-navigation__link">Logout <i></i></a>
           </nav>
           <nav class="mdl-navigation ng-hide" ng-show="!loggedIn">
@@ -52,54 +52,78 @@
         </div>
       </header>
       <main class="mdl-layout__content mdl-color--grey-100">
+
+        <!--First grid-->
+        <div class="mdl-grid content">
+          <div class="graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+
+            <div ng-show="type=='my'" class="ng-hide">
+              <h4 ng-show="userPolls.length == 0 && !noUserPolls" class="gl-center ng-hide">loading polls...</h4>
+              <h4 ng-show="userPolls.length == 0 && noUserPolls" class="gl-center ng-hide">You have no polls.</h4>
+              <h4 ng-show="userPolls.length > 0" class="gl-center ng-hide">My Polls</h4>
+            </div>
+            <div ng-show="type=='all'" class="ng-hide">
+              <h4 ng-show="allPolls.length == 0 && !noAllPolls" class="gl-center ng-hide">loading polls...</h4>
+              <h4 ng-show="allPolls.length == 0 && noAllPolls" class="gl-center ng-hide">There are no polls.</h4>
+              <h4 ng-show="allPolls.length > 0" class="gl-center ng-hide">Public Polls</h4>
+            </div>
+            
+            <div ng-show="type=='create_poll'" class="ng-hide">
+              <h4 class="gl-center">Add a New Poll</h4>
+            </div>
+
+          </div>
+        </div>
+
+
         <div class="mdl-grid content">
           <div class="graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
             <div ng-show="type=='all'" class="ng-hide">
               <!--All polls-->
-              <h4 ng-show="allPolls.length == 0 && !noPolls" class="ng-hide">loading polls...</h4>
-              <h4 ng-show="allPolls.length == 0 && noPolls" class="ng-hide">There are currently no polls.</h4>
-              <h4 ng-show="allPolls.length > 0" class="ng-hide">Available Polls:</h4>
-              <table class="mdl-data-table mdl-shadow--2dp">
-                  <tbody ng-repeat="poll in allPolls">
-                    <tr id="items">
-                      <td ng-click="openPoll($index)" id="item_{{$index}}" class="mdl-data-table__cell--non-numeric clickable">
-                        {{poll.title}}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              
+              <table class="full-width mdl-data-table mdl-shadow--2dp">
+                <tbody ng-repeat="poll in allPolls">
+                  <tr id="items" class="gl-option">
+                    <td ng-click="openPoll($index)" id="item_{{$index}}" class="mdl-data-table__cell--non-numeric clickable">
+                      {{poll.title}}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
             </div>
             <!--User polls-->
 
             <div ng-show="type=='my'" class="ng-hide">
-              <h4 ng-show="userPolls.length == 0 && !noUserPolls" class="ng-hide">loading polls...</h4>
-              <h4 ng-show="userPolls.length == 0 && noUserPolls" class="ng-hide">You have no polls.</h4>
-              <h4 ng-show="userPolls.length > 0" class="ng-hide">My Polls</h4>
+
               <div id="user_polls">
 
-                <table class="mdl-data-table mdl-shadow--2dp">
+                <table class="full-width mdl-data-table mdl-shadow--2dp">
                   <tbody ng-repeat="poll in userPolls">
                     <tr id="items">
                       <td ng-click="openMyPoll($index)" id="item_{{$index}}" class="mdl-data-table__cell--non-numeric clickable">
                         {{poll.title}}
                       </td>
-                      <td ng-click="removePoll($index)" class="mdl-data-table__cell--non-numeric clickable">
-                        <i class="material-icons">delete_forever</i>
+                      <td class="mdl-data-table__cell--non-numeric clickable">
+                        <input type="text" value="{{location}}poll?poll_id={{poll.id}}" />
+                      </td>
+                      <td class="mdl-data-table__cell--non-numeric clickable">
+                        <i ng-click="removePoll($index)" class="material-icons right">delete_forever</i>
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
               </div>
-
               <br>
-              <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button" ng-show="userPolls.length > 0 || noUserPolls" class="ng-hide">Add Poll</button>
+              <div class="gl-center">
+                <button ng-click="createPoll()" class="ng-hide mdl-button mdl-button--colored mdl-js-button" ng-show="userPolls.length > 0 || noUserPolls">Add Poll</button>
+              </div>
             </div>
 
             <div ng-show="type=='create_poll'" class="ng-hide">
 
               <form id="options_form">
+                <div>{{options_message}}</div>
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" name="title" type="text" id="title" placeholder="Title" />
                 </div>
@@ -115,7 +139,6 @@
                   <br>
                 </div>
               </form>
-              <div>{{options_message}}</div>
               <button ng-click="addOption()" class="mdl-button mdl-js-button mdl-button--fab">
                 <i class="material-icons">add</i>
               </button><br><br>
@@ -146,11 +169,10 @@
             <main class="mdl-layout__content">
               <div class="mdl-card mdl-shadow--6dp">
                 <div class="mdl-card__supporting-text">
-                  <!--action="/login" method="post" enctype='application/json'-->
+                  {{login_message}}
                   <form id="login_form">
-                    {{login_message}}
                     <div class="mdl-textfield mdl-js-textfield">
-                      <input class="mdl-textfield__input" name="username" type="text" id="username" placeholder="Username" />
+                      <input placeholder="Username" class="mdl-textfield__input" name="username" type="text" id="username" />
                     </div>
                     <div class="mdl-textfield mdl-js-textfield">
                       <input class="mdl-textfield__input" name="password" type="password" id="password" placeholder="Password" />
@@ -159,6 +181,9 @@
                       <button ng-click="submitLogin()" class="mdl-button mdl-button--colored mdl-js-button">Log in</button>
                       <button ng-click="showSignUp()" class="right mdl-button mdl-button--colored mdl-js-button">Sign Up</button>
                     </div>
+                    <br>
+                    <p>Username: demo</p>
+                    <p>Password: demo</p>
                   </form>
                 </div>
               </div>
@@ -180,7 +205,6 @@
       <div class="mdl-grid content">
         <div class="mdl-cell mdl-cell--4-col"></div>
         <div class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col">
-
 
           <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
             <main class="mdl-layout__content">
@@ -206,7 +230,6 @@
               </div>
             </main>
           </div>
-
 
         </div>
         <div class="mdl-cell mdl-cell--4-col"></div>

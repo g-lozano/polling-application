@@ -43,6 +43,7 @@
                 $scope.options = []
                 $scope.userPolls = []
                 $scope.allPolls = []
+                $scope.location = window.location.href
 
                 try {
                     $scope.username = ipCookie('pa_username')
@@ -263,6 +264,9 @@
                         }
                         $http.post('/signup', params)
                             .then(function successCallback(response) {
+                                $scope.signup_message = ""
+                                document.getElementById('signup_form').reset()
+                                
                                 var today = new Date();
                                 var expiresValue = new Date(today);
                                 expiresValue.setMinutes(today.getMinutes() + 120) //2 hours
@@ -271,14 +275,16 @@
                                     expires: expiresValue
                                 })
                                 $scope.username = ipCookie('pa_username')
-
-                                document.getElementById('signup_form').reset()
+                                
+                                loadAllPolls()
+                                loadUserPolls()
+                                
+                                $scope.loggedIn = true
                                 $scope.view = 'home'
-                                $scope.signup_message = ""
+                                $scope.type = 'my'
                             }, function errorCallback(response) {
                                 $scope.signup_message = "User exists."
                             })
-
                     }
                     else if (!new_username) {
                         $scope.signup_message = 'No username entered.'
