@@ -56,7 +56,9 @@
           <div class="graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
             <div ng-show="type=='all'" class="ng-hide">
               <!--All polls-->
-              
+              <h4 ng-show="allPolls.length == 0 && !noPolls" class="ng-hide">loading polls...</h4>
+              <h4 ng-show="allPolls.length == 0 && noPolls" class="ng-hide">There are currently no polls.</h4>
+              <h4 ng-show="allPolls.length > 0" class="ng-hide">Available Polls:</h4>
               <table class="mdl-data-table mdl-shadow--2dp">
                   <tbody ng-repeat="poll in allPolls">
                     <tr id="items">
@@ -71,8 +73,8 @@
             <!--User polls-->
 
             <div ng-show="type=='my'" class="ng-hide">
-              <h4 ng-show="userPolls.length == 0 && !noPolls" class="ng-hide">loading polls...</h4>
-              <h4 ng-show="userPolls.length == 0 && noPolls" class="ng-hide">You have no polls.</h4>
+              <h4 ng-show="userPolls.length == 0 && !noUserPolls" class="ng-hide">loading polls...</h4>
+              <h4 ng-show="userPolls.length == 0 && noUserPolls" class="ng-hide">You have no polls.</h4>
               <h4 ng-show="userPolls.length > 0" class="ng-hide">My Polls</h4>
               <div id="user_polls">
 
@@ -92,7 +94,7 @@
               </div>
 
               <br>
-              <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button" ng-show="userPolls.length > 0 || noPolls" class="ng-hide">Add Poll</button>
+              <button ng-click="createPoll()" class="mdl-button mdl-button--colored mdl-js-button" ng-show="userPolls.length > 0 || noUserPolls" class="ng-hide">Add Poll</button>
             </div>
 
             <div ng-show="type=='create_poll'" class="ng-hide">
@@ -117,7 +119,7 @@
               <button ng-click="addOption()" class="mdl-button mdl-js-button mdl-button--fab">
                 <i class="material-icons">add</i>
               </button><br><br>
-              <button ng-click="insertPoll()" class="mdl-button mdl-js-button mdl-button--raised">
+              <button id="insert_button" ng-click="insertPoll()" class="mdl-button mdl-js-button mdl-button--raised">
                 Create Poll
               </button>
               <button ng-click="cancelCreatePoll()" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">

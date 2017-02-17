@@ -256,6 +256,24 @@ app.post('/api/polls', function(req, res) {
             db.close()
         })
     }
+    else if (req.body.type == 'increment') {
+        mongo.connect(dbUrl, function(err, db) {
+            if (err) throw err
+
+            var doc = db.collection('pa-polls')
+
+            doc.update({
+                    id: req.body.id
+                }, req.body.pollData, {
+                    upsert: true
+                })
+                .then(function() {
+                    res.status(200).json({})
+                })
+
+            db.close()
+        })
+    }
     else if (req.body.poll_id) {
 
         mongo.connect(dbUrl, function(err, db) {
