@@ -3,10 +3,11 @@
 (function() {
     angular
         .module('app', ['ngResource', 'ipCookie'])
-        .controller('homeCtrl', ['$scope', '$http', 'ipCookie',
-            function($scope, $http, ipCookie) {
+        .controller('homeCtrl', ['$scope', '$http', 'ipCookie', homeCtrl])
+        
+        function homeCtrl($scope, $http, ipCookie) {
 
-                var checkUser = function() {
+                function checkUser() {
                     var username = ''
                     try {
                         username = ipCookie('pa_username')
@@ -59,7 +60,7 @@
                 $scope.view = 'home'
                 $scope.type = 'all'
 
-                var loadUserPolls = function() {
+                function loadUserPolls() {
                     var params = {
                         type: 'user',
                         username: ipCookie('pa_username')
@@ -72,7 +73,7 @@
                         })
                 }
 
-                var loadAllPolls = function() {
+                function loadAllPolls() {
                     var params = {
                         type: 'all'
                     }
@@ -340,11 +341,10 @@
                     window.open(window.location.href + 'poll?poll_id=' + $scope.allPolls[index].id)
                 }
 
-                var init = function() {
+                function init() {
                     loadAllPolls()
                 }
 
                 init()
             }
-        ])
 })();
